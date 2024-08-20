@@ -7,12 +7,23 @@ module.exports = {
   ],
   theme: {
     extend: {
-      backgroundImage: {
-        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-        "gradient-conic":
-          "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
+      colors: {
+        primary: 'var(--primary-color)',
       },
+      fontFamily: {
+        figtree: ['Figtree', 'sans-serif'],
+      },
+      keyframes: {
+        underlineanimation: {
+          '0%': { minWidth: '0' },
+          '100%': { minWidth: '100%' }
+        }
+      },
+      animation: {
+        underline: 'underlineanimation 0.4s forwards'
+      }
     },
+
   },
   plugins: [],
 };
