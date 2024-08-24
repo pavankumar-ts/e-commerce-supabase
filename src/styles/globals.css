@@ -21,4 +21,5 @@ body {
     position: absolute;
     bottom: -4px;
     height: 1px;
+    transform: scale(1.0001);
 }

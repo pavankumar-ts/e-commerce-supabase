@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { IoIosArrowRoundForward } from "react-icons/io";
-
-
+import { BsArrowRight } from "react-icons/bs";
+import { FiSearch } from "react-icons/fi";
+import { BsPerson } from "react-icons/bs";
+import { RiShoppingCartLine } from "react-icons/ri";
 
 const navItem = [
     {
@@ -287,11 +288,9 @@ const navItem = [
     },
 ]
 
-
-
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
-    const [activeDropdown, setActiveDropdown] = useState(0);
+    const [activeDropdown, setActiveDropdown] = useState(null);
 
     const toggleDropdown = (index) => {
         setActiveDropdown(activeDropdown === index ? null : index);
@@ -302,7 +301,7 @@ const Navbar = () => {
 
         return subList.map((subItem, subIndex) => (
             <li key={subIndex}>
-                <Link href={subItem.url} className="text-sm text-gray-600 hover:text-gray-900 relative group">
+                <Link href={subItem.url} className="text-sm text-gray-900 relative group">
                     {subItem.name}
                     <div className="underline group-hover:animate-underline"></div>
                 </Link>
@@ -311,56 +310,46 @@ const Navbar = () => {
     };
 
     return (
-        <nav className="bg-white shadow-lg">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex justify-between h-16 ">
-                    <div className="flex">
-                        <div className="flex-shrink-0 flex items-center">
-                            <Link href="/" className="text-xl font-bold text-gray-800">
-                                <Image src='/assets/logo.webp' width={1000} height={1000} className='h-full w-auto object-contain' />
-                            </Link>
-                        </div>
-                        <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-                            {navItem.map((item, index) => (
-                                <div key={index} className="relative group flex items-center ">
-                                    {item.type === 'direct' || item.type === 'dynamic' ? (
-                                        <Link href={item.url} className="text-gray-700 hover:text-gray-900 px-3 py-0  rounded-md text-sm font-medium">
-                                            {item.name}
-                                        </Link>
-                                    ) : (
-                                        <div>
-                                            <button
-                                                onMouseEnter={() => toggleDropdown(index)}
-                                                className="text-gray-700 hover:text-gray-900 px-3 py-0  rounded-md text-sm font-medium focus:outline-none"
-                                            >
-                                                {item.name}
-                                            </button>
-                                        </div>
-                                    )}
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                    <div className="-mr-2 flex items-center sm:hidden">
-                        <button
-                            onClick={() => setIsOpen(!isOpen)}
-                            className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
-                        >
-                            <span className="sr-only">Open main menu</span>
-                            {!isOpen ? (
-                                <svg className="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-                                </svg>
+        <nav className="bg-white shadow-lg sticky top-0 z-50 ">
+            <div className="flex justify-between h-16 px-4 max-w-[1200px]  m-auto gap-4">
+                {/* logo */}
+                <Link href="/" className="text-xl font-bold text-gray-800 h-full flex items-center">
+                    <Image src='/assets/logo.webp' alt='Logo' width={1000} height={1000} className='h-2/5 w-auto object-contain relative' />
+                </Link>
+                {/* main link */}
+                <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
+                    {navItem.map((item, index) => (
+                        <div key={index} className="flex items-center">
+                            {item.type === 'direct' || item.type === 'dynamic' ? (
+                                <Link href={item.url}
+                                    onMouseEnter={() => setActiveDropdown(null)}
+                                    className="text-gray-900  py-0 group relative rounded-md text-sm font-medium focus:outline-none">
+                                    {item.name}
+                                    <div className="underline group-hover:animate-underline"></div>
+                                </Link>
                             ) : (
-                                <svg className="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
+                                <div>
+                                    <button
+                                        onMouseEnter={() => toggleDropdown(index)}
+                                        className="text-gray-900  py-0 group relative rounded-md text-sm font-medium focus:outline-none"
+                                    >
+                                        {item.name}
+                                        <div className="underline group-hover:animate-underline"></div>
+                                    </button>
+                                </div>
                             )}
-                        </button>
-                    </div>
+                        </div>
+                    ))}
+                </div>
+                <div className="flex gap-4 items-center text-2xl">
+                    <FiSearch />
+                    <BsPerson />
+                    <RiShoppingCartLine />
                 </div>
             </div>
 
+
+            {/* dropdown */}
             {activeDropdown !== null && (
                 <div
                     className="absolute left-0 w-full bg-white shadow-lg z-50"
@@ -379,7 +368,7 @@ const Navbar = () => {
                                 </div>
                                 <Link href='/collections'
                                     className="group  w-[200px] flex justify-center items-center gap-1 mt-8 text-[20px] font-figtree font-thin text-gray-600 py-2  border border-primary text-nowrap ease-linear"
-                                >See more <IoIosArrowRoundForward className='w-0 opacity-0  ease-linear group-hover:w-auto group-hover:opacity-100' /> </Link>
+                                >See more <BsArrowRight className='w-0 opacity-0 transition-all text-xlg duration-300 ease-in-out group-hover:w-5 group-hover:opacity-100 group-hover:ml-1' /> </Link>
                             </>
                         )}
                         {navItem[activeDropdown].type === 'links' && (
@@ -391,7 +380,6 @@ const Navbar = () => {
 
                                             <ul className="space-y-3">
                                                 {renderSubList(category.subList)}
-
                                             </ul>
                                         </div>
                                     ))}

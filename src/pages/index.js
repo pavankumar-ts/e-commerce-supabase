@@ -1,10 +1,37 @@
 import Image from "next/image";
-import { Inter } from "next/font/google";
 import Head from "next/head";
-
-const inter = Inter({ subsets: ["latin"] });
+import Hero from "@/components/home/Hero";
+import { useEffect, useState } from "react";
+import CardCarousel from "@/components/CardCarousel";
 
 export default function Home() {
+  const [products, setProducts] = useState([])
+  const [error, setError] = useState(null)
+
+  useEffect(() => {
+    fetchProducts()
+  }, [])
+
+  async function fetchProducts() {
+    try {
+      const res = await fetch(`/api/products?page=${1}&pageSize=10`)
+      const data = await res.json()
+      console.log("API response:", data)
+      if (data.products && Array.isArray(data.products)) {
+        setProducts(data.products)
+      } else {
+        throw new Error('Invalid data format received from API')
+      }
+    } catch (error) {
+      console.error('Error fetching products:', error)
+      setError(error.message)
+    }
+  }
+
+
+
+
+
   return (
     <>
       <Head>
@@ -14,7 +41,17 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <>
-       
+        <Hero />
+
+        {/* Best Seller */}
+        <div className="container mx-auto p-12 px-4 overflow-hidden max-w-[1200px]">
+          <h2 className="text-3xl font-medium mb-10">Our Best Sellers</h2>
+          {error ? (
+            <p className="text-red-500">{error}</p>
+          ) : (
+            <CardCarousel products={products} />
+          )}
+        </div>
       </>
     </>
   );

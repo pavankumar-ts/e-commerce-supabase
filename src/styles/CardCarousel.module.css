@@ -1,0 +1,55 @@
+.imageSliderContainer {
+    position: relative;
+}
+
+.dotsContainer {
+    position: absolute;
+    bottom: 10px;
+    width: 100%;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.dotsContainer ul {
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    margin: 0 4px;
+    background: red;
+    border-radius: 50%;
+    opacity: 0.8;
+    transition: all 0.3s ease;
+}
+
+.imageSliderContainer :global(.slick-dots li) {
+    margin: 0;
+}
+
+.imageSliderContainer :global(.slick-dots li button) {
+    padding: 0;
+}
+
+.imageSliderContainer :global(.slick-dots li button:before) {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background: white;
+    border-radius: 50%;
+    opacity: 0.8;
+    transition: all 0.3s ease;
+}
+
+.imageSliderContainer .slick-active {
+    background: rgb(0, 0, 0) !important;
+    opacity: 1;
+    width: 10px;
+    height: 10px;
+}
+
