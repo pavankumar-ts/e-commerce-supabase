@@ -19,7 +19,7 @@ export default function Home() {
       const res = await fetch(`/api/products?page=${1}&pageSize=10`);
       const data = await res.json();
       if (data.products && Array.isArray(data.products)) {
-          setProducts(data.products);
+        setProducts(data.products);
       } else {
         throw new Error('Invalid data format received from API');
       }
@@ -39,7 +39,7 @@ export default function Home() {
       </Head>
       <main>
         <Hero />
-        <div className="container mx-auto p-12 px-4 overflow-hidden max-w-[1300px]">
+        <div className="mx-auto p-12 px-4 overflow-hidden max-w-[1300px] ">
           <h2 className="text-3xl font-medium mb-10">Our Best Sellers</h2>
           {error ? (
             <p className="text-red-500">{error}</p>

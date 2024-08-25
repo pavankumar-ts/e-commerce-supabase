@@ -143,7 +143,7 @@ const CardCarousel = ({ products }) => {
     )
   }
   return (
-    <div className="container relative">
+    <div className="relative">
       <Slider ref={sliderRef} {...productCarouselSettings}>
         {products.map((product) => (
           <div key={product.id} className="px-0">
