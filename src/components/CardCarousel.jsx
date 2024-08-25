@@ -7,6 +7,10 @@ import "slick-carousel/slick/slick-theme.css";
 import Image from 'next/image';
 import { CartItemSContext } from '@/Context';
 import { formatToIndianCurrency } from '@/utils/formatUtils';
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
+
+
 
 const CardCarousel = ({ products }) => {
   const [progress, setProgress] = useState(0);
@@ -113,6 +117,31 @@ const CardCarousel = ({ products }) => {
     addToCart(product);
   }, [addToCart]);
 
+
+  const ProductSkeleton = () => (
+    <div className="px-0 flex-1 ">
+      <div className="p-4 pt-0">
+        <div className="relative">
+          <Skeleton height={340} />
+        </div>
+        <Skeleton height={24} width={150} className="mt-4 mb-1" />
+        <Skeleton height={16} count={2} className="mb-2" />
+        <Skeleton height={20} width={100} className="mb-4" />
+        <Skeleton height={40} />
+      </div>
+    </div>
+  );
+
+  if (products.length <= 0) {
+    return (
+      <div className="flex" >
+
+        {Array(4).fill().map((_, index) => (
+          <ProductSkeleton key={index} />
+        ))}
+      </div>
+    )
+  }
   return (
     <div className="container relative">
       <Slider ref={sliderRef} {...productCarouselSettings}>
@@ -122,12 +151,13 @@ const CardCarousel = ({ products }) => {
               <div className="relative">
                 <Slider {...imageSliderSettings}>
                   {product.images.map((image, index) => (
-                    <div key={index} className="relative h-[340px]">
+                    <div key={index} className="relative h-[340px] overflow-hidden">
                       <Image
                         src={image}
                         alt={`${product.name} - ${index + 1}`}
                         layout="fill"
                         objectFit="cover"
+                        className="hover:scale-110 transition-all duration-700 ease-in-out"
                       />
                     </div>
                   ))}
