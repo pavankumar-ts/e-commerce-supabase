@@ -1,39 +1,44 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect, useContext, useCallback } from 'react';
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Image from 'next/image';
+import { CartIsOpenContext, CartItemSContext } from '@/Context';
+import { handleAddCard } from '@/utils/cartUtils';
+import { formatToIndianCurrency } from '@/utils/formatUtils';
 
 const CardCarousel = ({ products }) => {
   const [progress, setProgress] = useState(0);
   const [currentSlide, setCurrentSlide] = useState(0);
   const sliderRef = useRef(null);
   const [slidesToShow, setSlidesToShow] = useState(4);
+  const { cartItems, setCartItems } = useContext(CartItemSContext);
+  const { setCartIsOpen } = useContext(CartIsOpenContext);
 
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth < 480) setSlidesToShow(1);
-      else if (window.innerWidth < 768) setSlidesToShow(2);
-      else if (window.innerWidth < 1024) setSlidesToShow(3);
-      else setSlidesToShow(4);
-    };
-
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+  const handleResize = useCallback(() => {
+    if (window.innerWidth < 480) setSlidesToShow(1);
+    else if (window.innerWidth < 768) setSlidesToShow(2);
+    else if (window.innerWidth < 1024) setSlidesToShow(3);
+    else setSlidesToShow(4);
   }, []);
 
   useEffect(() => {
-    setProgress((slidesToShow / products.length) * 100);
-  }, [slidesToShow, products.length]);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [handleResize]);
 
-  function renderStars(rating) {
+  useEffect(() => {
+    setProgress((currentSlide + slidesToShow) / products.length * 100);
+  }, [currentSlide, slidesToShow, products.length]);
+
+  const renderStars = useCallback((rating) => {
     return Array(5).fill(0).map((_, i) => (
       <svg key={i} className={`w-4 h-4 ${i < Math.floor(rating) ? 'text-yellow-300' : 'text-gray-300'}`} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
       </svg>
-    ))
-  }
+    ));
+  }, []);
 
   const productCarouselSettings = {
     dots: false,
@@ -43,8 +48,6 @@ const CardCarousel = ({ products }) => {
     slidesToScroll: 1,
     afterChange: (current) => {
       setCurrentSlide(current);
-      const newProgress = ((current + slidesToShow) / products.length) * 100;
-      setProgress(Math.min(newProgress, 100));
     },
     responsive: [
       {
@@ -95,16 +98,21 @@ const CardCarousel = ({ products }) => {
     ),
   };
 
-  const handlePrev = () => {
-    sliderRef.current.slickPrev();
-  };
+  const handlePrev = useCallback(() => {
+    sliderRef.current?.slickPrev();
+  }, []);
 
-  const handleNext = () => {
-    sliderRef.current.slickNext();
-  };
+  const handleNext = useCallback(() => {
+    sliderRef.current?.slickNext();
+  }, []);
 
   const isBeginning = currentSlide === 0;
   const isEnd = currentSlide === products.length - slidesToShow;
+
+  const memoizedHandleAddCard = useCallback(
+    (product) => handleAddCard(product, setCartItems, setCartIsOpen),
+    [cartItems]
+  );
 
   return (
     <div className="container relative">
@@ -130,7 +138,7 @@ const CardCarousel = ({ products }) => {
               <p className="text-sm text-gray-600 mb-2">{product.brief}</p>
               <div className="flex mb-2">{renderStars(product.review)}</div>
               <div className="flex items-center mb-4">
-                <span className="text-lg font-bold mr-2">₹{product.price}</span>
+                <span className="text-lg font-bold mr-2">{formatToIndianCurrency(product.price)}</span>
                 {product.mrp && product.mrp !== product.price && (
                   <span className="text-sm text-gray-500 line-through">₹{product.mrp}</span>
                 )}
@@ -141,6 +149,7 @@ const CardCarousel = ({ products }) => {
                   : 'bg-gray-400 text-white cursor-not-allowed'
                   }`}
                 disabled={product.stock === 0}
+                onClick={() => memoizedHandleAddCard(product)}
               >
                 {product.stock > 0 ? 'Add to cart' : 'Sold out'}
               </button>
@@ -175,7 +184,7 @@ const CardCarousel = ({ products }) => {
         </button>
       </div>
     </div>
-  )
+  );
 }
 
-export default CardCarousel
+export default CardCarousel;

@@ -16,10 +16,21 @@ body {
     --secondary-font: "Figtree", sans-serif;
 }
 
+/* Navbar Underline with animation */
 .underline {
     background: var(--primary-color);
     position: absolute;
     bottom: -4px;
     height: 1px;
     transform: scale(1.0001);
+}
+
+
+/* Hide scrollbar for all major browsers */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    scrollbar-width: none;  /* Firefox */
 }

@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { BsArrowRight } from "react-icons/bs";
 import { FiSearch } from "react-icons/fi";
 import { BsPerson } from "react-icons/bs";
 import { RiShoppingCartLine } from "react-icons/ri";
+import { CartIsOpenContext, CartItemSContext } from '@/Context';
 
 const navItem = [
     {
@@ -289,8 +290,14 @@ const navItem = [
 ]
 
 const Navbar = () => {
-    const [isOpen, setIsOpen] = useState(false);
     const [activeDropdown, setActiveDropdown] = useState(null);
+    const [isSticky, setIsSticky] = useState(0);
+    const [lastScrollY, setLastScrollY] = useState(0);
+    const [hasScrolled, setHasScrolled] = useState(false);
+    const { setCartIsOpen } = useContext(CartIsOpenContext)
+
+    const { cartItems } = useContext(CartItemSContext)
+    const cartItemCount = cartItems.length
 
     const toggleDropdown = (index) => {
         setActiveDropdown(activeDropdown === index ? null : index);
@@ -309,8 +316,43 @@ const Navbar = () => {
         ));
     };
 
+
+    // Navbar Sticky
+    const handleScroll = () => {
+        const currentScrollY = window.scrollY;
+
+        if (!hasScrolled && currentScrollY > 0) {
+            setHasScrolled(true);
+        }
+
+        if (currentScrollY > 70) {
+            if (currentScrollY < lastScrollY) {
+                setIsSticky(70); // Scrolling up
+            } else {
+                setIsSticky(0); // Scrolling down
+            }
+        } else {
+            setIsSticky(70); // Always show when near the top
+        }
+
+        setLastScrollY(currentScrollY);
+    };
+
+    useEffect(() => {
+        window.addEventListener('scroll', handleScroll);
+
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        };
+    }, [lastScrollY]);
+
     return (
-        <nav className="bg-white shadow-lg sticky top-0 z-50 ">
+        <nav
+            className={`bg-white sticky top-0 transition-transform duration-300 ease-in-out
+                ${hasScrolled ? (isSticky ? 'translate-y-0' : '-translate-y-full') : ''}
+      z-50
+    `}
+        >
             <div className="flex justify-between h-16 px-4 max-w-[1200px]  m-auto gap-4">
                 {/* logo */}
                 <Link href="/" className="text-xl font-bold text-gray-800 h-full flex items-center">
@@ -344,7 +386,13 @@ const Navbar = () => {
                 <div className="flex gap-4 items-center text-2xl">
                     <FiSearch />
                     <BsPerson />
-                    <RiShoppingCartLine />
+                    {/* Cart */}
+                    <div className="relative cursor-pointer"
+                        onClick={() => setCartIsOpen(true)}
+                    >
+                        <RiShoppingCartLine />
+                        <div className="absolute top-[-10px] right-[-10px] bg-black text-white text-xs w-5 p-1 h-5 flex items-center justify-center rounded-full">{cartItemCount}</div>
+                    </div>
                 </div>
             </div>
 
@@ -405,19 +453,6 @@ const Navbar = () => {
                 </div>
             )}
 
-            {isOpen && (
-                <div className="sm:hidden">
-                    <div className="pt-2 pb-3 space-y-1">
-                        {navItem.map((item, index) => (
-                            <div key={index}>
-                                <Link href={item.url} className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">
-                                    {item.name}
-                                </Link>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            )}
         </nav>
     );
 };

@@ -16,7 +16,6 @@ export default function Home() {
     try {
       const res = await fetch(`/api/products?page=${1}&pageSize=10`)
       const data = await res.json()
-      console.log("API response:", data)
       if (data.products && Array.isArray(data.products)) {
         setProducts(data.products)
       } else {
@@ -27,10 +26,6 @@ export default function Home() {
       setError(error.message)
     }
   }
-
-
-
-
 
   return (
     <>
