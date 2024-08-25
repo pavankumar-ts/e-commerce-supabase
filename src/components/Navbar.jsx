@@ -6,6 +6,7 @@ import { FiSearch } from "react-icons/fi";
 import { BsPerson } from "react-icons/bs";
 import { RiShoppingCartLine } from "react-icons/ri";
 import { CartIsOpenContext, CartItemSContext } from '@/Context';
+import { useRouter } from 'next/router';
 
 const navItem = [
     {
@@ -294,10 +295,15 @@ const Navbar = () => {
     const [isSticky, setIsSticky] = useState(0);
     const [lastScrollY, setLastScrollY] = useState(0);
     const [hasScrolled, setHasScrolled] = useState(false);
-    const { setCartIsOpen } = useContext(CartIsOpenContext)
+    const { setCartIsOpen } = useContext(CartIsOpenContext);
+    const { cartItems } = useContext(CartItemSContext);
+    const [cartItemCount, setCartItemCount] = useState(0);
+    const router = useRouter()
 
-    const { cartItems } = useContext(CartItemSContext)
-    const cartItemCount = cartItems.length
+
+    useEffect(() => {
+        setCartItemCount(cartItems.length);
+    }, [cartItems]);
 
     const toggleDropdown = (index) => {
         setActiveDropdown(activeDropdown === index ? null : index);
@@ -310,14 +316,12 @@ const Navbar = () => {
             <li key={subIndex}>
                 <Link href={subItem.url} className="text-sm text-gray-900 relative group">
                     {subItem.name}
-                    <div className="underline group-hover:animate-underline"></div>
+                    <div className="underline-class group-hover:animate-underline"></div>
                 </Link>
             </li>
         ));
     };
 
-
-    // Navbar Sticky
     const handleScroll = () => {
         const currentScrollY = window.scrollY;
 
@@ -348,12 +352,12 @@ const Navbar = () => {
 
     return (
         <nav
-            className={`bg-white sticky top-0 transition-transform duration-300 ease-in-out
+            className={`bg-white sticky top-0 transition-transform duration-300 ease-in-out 
                 ${hasScrolled ? (isSticky ? 'translate-y-0' : '-translate-y-full') : ''}
       z-50
     `}
         >
-            <div className="flex justify-between h-16 px-4 max-w-[1200px]  m-auto gap-4">
+            <div className="flex justify-between h-16 px-4 max-w-[1200px] border-b-[1px] border-gray-300 m-auto gap-4">
                 {/* logo */}
                 <Link href="/" className="text-xl font-bold text-gray-800 h-full flex items-center">
                     <Image src='/assets/logo.webp' alt='Logo' width={1000} height={1000} className='h-2/5 w-auto object-contain relative' />
@@ -367,7 +371,7 @@ const Navbar = () => {
                                     onMouseEnter={() => setActiveDropdown(null)}
                                     className="text-gray-900  py-0 group relative rounded-md text-sm font-medium focus:outline-none">
                                     {item.name}
-                                    <div className="underline group-hover:animate-underline"></div>
+                                    <div className="underline-class group-hover:animate-underline"></div>
                                 </Link>
                             ) : (
                                 <div>
@@ -376,7 +380,7 @@ const Navbar = () => {
                                         className="text-gray-900  py-0 group relative rounded-md text-sm font-medium focus:outline-none"
                                     >
                                         {item.name}
-                                        <div className="underline group-hover:animate-underline"></div>
+                                        <div className="underline-class group-hover:animate-underline"></div>
                                     </button>
                                 </div>
                             )}
@@ -388,7 +392,7 @@ const Navbar = () => {
                     <BsPerson />
                     {/* Cart */}
                     <div className="relative cursor-pointer"
-                        onClick={() => setCartIsOpen(true)}
+                        onClick={() => router.asPath == '/cart' ? '' : setCartIsOpen(true)}
                     >
                         <RiShoppingCartLine />
                         <div className="absolute top-[-10px] right-[-10px] bg-black text-white text-xs w-5 p-1 h-5 flex items-center justify-center rounded-full">{cartItemCount}</div>
@@ -424,7 +428,7 @@ const Navbar = () => {
                                 <div className="grid grid-cols-3 gap-8 w-3/4">
                                     {navItem[activeDropdown].subList.map((category, categoryIndex) => (
                                         <div key={categoryIndex}>
-                                            <Link href={category.url} className="text-[16px] text-gray-900 mb-2 flex font-bold hover:animate-[hoverUnderline] relative w-max cursor-pointer group">{category.name}<div className="underline group-hover:animate-underline"></div></Link>
+                                            <Link href={category.url} className="text-[16px] text-gray-900 mb-2 flex font-bold hover:animate-[hoverUnderline] relative w-max cursor-pointer group">{category.name}<div className="underline-class group-hover:animate-underline"></div></Link>
 
                                             <ul className="space-y-3">
                                                 {renderSubList(category.subList)}

@@ -1,32 +1,42 @@
+// File: pages/_app.js
+
 import Cart from "@/components/Cart";
 import Navbar from "@/components/Navbar";
 import { CartIsOpenContext, CartItemSContext } from "@/Context";
 import "@/styles/globals.css";
 import { useEffect, useState } from "react";
+import { useCart } from "@/hooks/useCart";
+import axios from 'axios';
 
 export default function App({ Component, pageProps }) {
-  const [cartItems, setCartItems] = useState([]);
-  const [cartIsOpen, setCartIsOpen] = useState(false);
+  const {
+    cartItems,
+    setCartItems,
+    cartIsOpen,
+    setCartIsOpen,
+    addToCart,
+    incrementItem,
+    decrementItem,
+    removeItem,
+    cartTotal
+  } = useCart();
+
   const [isClient, setIsClient] = useState(false);
 
   const verifyAndUpdateCart = async (savedCartItems) => {
     try {
       const productIds = savedCartItems.map(item => item.id);
-      const response = await fetch('/api/verify-products', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ productIds })
-      });
-      const { products } = await response.json();
+      const response = await axios.post('/api/verify-products', { productIds });
+      const { products } = response.data;
 
       const updatedCartItems = savedCartItems.map(cartItem => {
         const dbProduct = products.find(p => p.id === cartItem.id);
         if (dbProduct) {
           return {
             ...cartItem,
-            name: dbProduct.name,
             price: dbProduct.price,
-            itemCount: Math.min(cartItem.itemCount, dbProduct.stock)
+            itemCount: Math.min(cartItem.itemCount, dbProduct.stock),
+            stock: dbProduct.stock
           };
         }
         return null; // Product no longer exists
@@ -36,36 +46,44 @@ export default function App({ Component, pageProps }) {
       localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
     } catch (error) {
       console.error('Error verifying products:', error);
-      setCartItems(savedCartItems); // Fallback to saved items if verification fails
+      // Keep the saved items in case of verification failure
+      setCartItems(savedCartItems);
+      localStorage.setItem('cartItems', JSON.stringify(savedCartItems));
     }
   };
 
   useEffect(() => {
     setIsClient(true);
     const savedCartItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
+    setCartItems(savedCartItems);
     if (savedCartItems.length > 0) {
       verifyAndUpdateCart(savedCartItems);
-    } else {
-      setCartItems(savedCartItems);
     }
   }, []);
 
   useEffect(() => {
-    console.log("cartItems", cartItems);
-
-    if (isClient) {
+    if (isClient && cartItems.length > 0) {
       localStorage.setItem('cartItems', JSON.stringify(cartItems));
-      console.log("localStorage", localStorage.cartItems);
     }
   }, [cartItems, isClient]);
 
+  const cartContextValue = {
+    cartItems,
+    setCartItems,
+    addToCart,
+    incrementItem,
+    decrementItem,
+    removeItem,
+    cartTotal
+  };
+
   return (
     <CartIsOpenContext.Provider value={{ cartIsOpen, setCartIsOpen }}>
-      <CartItemSContext.Provider value={{ cartItems, setCartItems }} >
+      <CartItemSContext.Provider value={cartContextValue}>
         <Navbar />
         <Component {...pageProps} />
-        <Cart />
+        {isClient && <Cart />}
       </CartItemSContext.Provider>
     </CartIsOpenContext.Provider>
-  )
+  );
 }

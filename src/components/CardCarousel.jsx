@@ -1,10 +1,11 @@
-import React, { useState, useRef, useEffect, useContext, useCallback } from 'react';
+// File: components/CardCarousel.js
+
+import React, { useState, useRef, useEffect, useCallback, useContext } from 'react';
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Image from 'next/image';
-import { CartIsOpenContext, CartItemSContext } from '@/Context';
-import { handleAddCard } from '@/utils/cartUtils';
+import { CartItemSContext } from '@/Context';
 import { formatToIndianCurrency } from '@/utils/formatUtils';
 
 const CardCarousel = ({ products }) => {
@@ -12,8 +13,7 @@ const CardCarousel = ({ products }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const sliderRef = useRef(null);
   const [slidesToShow, setSlidesToShow] = useState(4);
-  const { cartItems, setCartItems } = useContext(CartItemSContext);
-  const { setCartIsOpen } = useContext(CartIsOpenContext);
+  const { addToCart } = useContext(CartItemSContext);
 
   const handleResize = useCallback(() => {
     if (window.innerWidth < 480) setSlidesToShow(1);
@@ -109,10 +109,9 @@ const CardCarousel = ({ products }) => {
   const isBeginning = currentSlide === 0;
   const isEnd = currentSlide === products.length - slidesToShow;
 
-  const memoizedHandleAddCard = useCallback(
-    (product) => handleAddCard(product, setCartItems, setCartIsOpen),
-    [cartItems]
-  );
+  const memoizedHandleAddCard = useCallback((product) => {
+    addToCart(product);
+  }, [addToCart]);
 
   return (
     <div className="container relative">
@@ -140,12 +139,12 @@ const CardCarousel = ({ products }) => {
               <div className="flex items-center mb-4">
                 <span className="text-lg font-bold mr-2">{formatToIndianCurrency(product.price)}</span>
                 {product.mrp && product.mrp !== product.price && (
-                  <span className="text-sm text-gray-500 line-through">₹{product.mrp}</span>
+                  <span className="text-sm text-gray-500 line-through">{formatToIndianCurrency(product.mrp)}</span>
                 )}
               </div>
               <button
                 className={`w-full py-2 px-4 ${product.stock > 0
-                  ? 'bg-black text-white hover:bg-gray-800'
+                  ? 'bg-black text-white'
                   : 'bg-gray-400 text-white cursor-not-allowed'
                   }`}
                 disabled={product.stock === 0}

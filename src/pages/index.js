@@ -1,29 +1,31 @@
-import Image from "next/image";
-import Head from "next/head";
+// pages/index.js
+
+import React, { useContext, useEffect, useState } from 'react';
+import Head from 'next/head';
+import { CartItemSContext } from '@/Context';
 import Hero from "@/components/home/Hero";
-import { useEffect, useState } from "react";
 import CardCarousel from "@/components/CardCarousel";
 
 export default function Home() {
-  const [products, setProducts] = useState([])
-  const [error, setError] = useState(null)
+  const [products, setProducts] = useState([]);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetchProducts()
-  }, [])
+    fetchProducts();
+  }, []);
 
   async function fetchProducts() {
     try {
-      const res = await fetch(`/api/products?page=${1}&pageSize=10`)
-      const data = await res.json()
+      const res = await fetch(`/api/products?page=${1}&pageSize=10`);
+      const data = await res.json();
       if (data.products && Array.isArray(data.products)) {
-        setProducts(data.products)
+        setProducts(data.products);
       } else {
-        throw new Error('Invalid data format received from API')
+        throw new Error('Invalid data format received from API');
       }
     } catch (error) {
-      console.error('Error fetching products:', error)
-      setError(error.message)
+      console.error('Error fetching products:', error);
+      setError(error.message);
     }
   }
 
@@ -35,10 +37,8 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <>
+      <main>
         <Hero />
-
-        {/* Best Seller */}
         <div className="container mx-auto p-12 px-4 overflow-hidden max-w-[1200px]">
           <h2 className="text-3xl font-medium mb-10">Our Best Sellers</h2>
           {error ? (
@@ -47,7 +47,7 @@ export default function Home() {
             <CardCarousel products={products} />
           )}
         </div>
-      </>
+      </main>
     </>
   );
 }

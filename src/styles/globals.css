@@ -17,7 +17,7 @@ body {
 }
 
 /* Navbar Underline with animation */
-.underline {
+.underline-class {
     background: var(--primary-color);
     position: absolute;
     bottom: -4px;
