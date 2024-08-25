@@ -360,7 +360,7 @@ const Navbar = () => {
             <div className="flex justify-between h-16 px-4 max-w-[1200px] border-b-[1px] border-gray-300 m-auto gap-4">
                 {/* logo */}
                 <Link href="/" className="text-xl font-bold text-gray-800 h-full flex items-center">
-                    <Image src='/assets/logo.webp' alt='Logo' width={1000} height={1000} className='h-2/5 w-auto object-contain relative' />
+                    <Image src='/assets/logo.webp' alt='Logo' width={1000} height={1000}  loading='eager' className='h-2/5 w-auto object-contain relative' />
                 </Link>
                 {/* main link */}
                 <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
@@ -413,7 +413,7 @@ const Navbar = () => {
                                 <div className="flex gap-8">
                                     {navItem[activeDropdown].subList.map((subItem, subIndex) => (
                                         <Link key={subIndex} href={subItem.url} className="group">
-                                            <Image src={subItem.img} alt={subItem.name} className="object-cover object-center group-hover:opacity-75" width={160} height={300} />
+                                            <Image src={subItem.img} alt={subItem.name} className="object-cover object-center group-hover:opacity-75" width={160} height={300} loading='eager' />
                                             <h3 className="mt-4 text-sm font-bold text-gray-700 group-hover:underline">{subItem.name}</h3>
                                         </Link>
                                     ))}
@@ -444,6 +444,7 @@ const Navbar = () => {
                                                 alt={navItem[activeDropdown].newLaunch.title || 'New Launch'}
                                                 fill
                                                 objectFit="cover"
+                                                 loading='eager'
                                             />
                                         </div>
                                         <h3 className="text-sm mt-4 font-medium text-gray-900">{navItem[activeDropdown].newLaunch.title}</h3>
