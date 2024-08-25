@@ -4,7 +4,7 @@ import { BsArrowRight } from "react-icons/bs";
 
 const Hero = () => {
     return (
-        <div className="container flex flex-col md:flex-row items-center">
+        <div className="flex flex-col md:flex-row items-center">
             {/* Product Images */}
             <div className="md:w-2/3 h-[90vh] mb-8 md:mb-0">
                 <Image
@@ -18,7 +18,7 @@ const Hero = () => {
             </div>
 
             {/* Text Content */}
-            <div className="md:w-1/3 md:pl-12">
+            <div className="md:w-1/3 md:px-6 ">
                 <h2 className="text-sm uppercase tracking-wide text-gray-600 mb-2">Build Your</h2>
                 <h1 className="text-4xl md:text-4xl  font-thin text-gray-900 mb-4">
                     Personalized Skincare Routine

@@ -357,7 +357,7 @@ const Navbar = () => {
       z-50
     `}
         >
-            <div className="flex justify-between h-16 px-4 max-w-[1200px] border-b-[1px] border-gray-300 m-auto gap-4">
+            <div className="flex justify-between h-16 px-4 max-w-[1300px] border-b-[1px] border-gray-300 m-auto gap-4">
                 {/* logo */}
                 <Link href="/" className="text-xl font-bold text-gray-800 h-full flex items-center">
                     <Image src='/assets/logo.webp' alt='Logo' width={1000} height={1000}  loading='eager' className='h-2/5 w-auto object-contain relative' />

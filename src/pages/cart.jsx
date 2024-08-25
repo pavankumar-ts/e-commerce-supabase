@@ -12,7 +12,7 @@ const CartPage = () => {
 
     useEffect(() => {
         setIsClient(true);
-        
+
     }, []);
 
     if (!isClient) {
@@ -26,7 +26,7 @@ const CartPage = () => {
             {cartItems.length === 0 ? (
                 <div className="text-center py-8">
                     <p className="text-xl mb-4">Your cart is empty</p>
-                    <Link href="/products" className="bg-black text-white px-6 py-2 rounded-lg">
+                    <Link href="/" className="bg-black text-white px-6 py-2">
                         Continue Shopping
                     </Link>
                 </div>
