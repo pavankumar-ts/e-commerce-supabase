@@ -33,7 +33,7 @@ const Cart = () => {
                 className={`h-full w-[540px] bg-white transition-transform duration-500 ease-in-out ${cartIsOpen ? 'translate-x-0' : 'translate-x-full'
                     }`}
             >
-                <div className="flex justify-between items-center text-base uppercase font-medium p-8 py-4 border-b-[1px] border-gray-300">
+                <div className="flex justify-between items-center text-base uppercase font-medium p-8 py-4 border-b-[1px] border-gray-300 sticky top-0  bg-white ">
                     Shopping Cart {`(${cartItems.length})`}
                     <IoMdClose className="text-2xl cursor-pointer" onClick={() => setCartIsOpen(false)} />
                 </div>
