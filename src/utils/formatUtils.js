@@ -18,3 +18,10 @@ export const formatToIndianCurrency = (number) => {
     // Add the ₹ symbol at the beginning
     return `₹${formatted}`;
 };
+
+export const formatLinkPath = (name) => {
+    return name.toLowerCase().replace(/\s+/g, '-')
+}
+export const formatLinkPathReverse = (name) => {
+    return name.toLowerCase().replace('-', ' ')
+}

@@ -5,6 +5,7 @@ import Head from 'next/head';
 import { CartItemSContext } from '@/Context';
 import Hero from "@/components/home/Hero";
 import CardCarousel from "@/components/CardCarousel";
+import CategorySection from '@/components/home/Category';
 
 export default function Home() {
   const [products, setProducts] = useState([]);
@@ -47,6 +48,7 @@ export default function Home() {
             <CardCarousel products={products} />
           )}
         </div>
+        <CategorySection />
       </main>
     </>
   );
