@@ -1,5 +1,3 @@
-// File: components/CardCarousel.js
-
 import React, { useState, useRef, useEffect, useCallback, useContext } from 'react';
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
@@ -7,12 +5,7 @@ import "slick-carousel/slick/slick-theme.css";
 import Image from 'next/image';
 import { CartItemSContext } from '@/Context';
 import { formatToIndianCurrency } from '@/utils/formatUtils';
-import Skeleton from 'react-loading-skeleton';
-import 'react-loading-skeleton/dist/skeleton.css';
 import renderStars from './common/renderStars';
-
-
-
 
 const CardCarousel = ({ products }) => {
   const [progress, setProgress] = useState(0);
@@ -22,10 +15,12 @@ const CardCarousel = ({ products }) => {
   const { addToCart } = useContext(CartItemSContext);
 
   const handleResize = useCallback(() => {
-    if (window.innerWidth < 480) setSlidesToShow(1);
-    else if (window.innerWidth < 768) setSlidesToShow(2);
-    else if (window.innerWidth < 1024) setSlidesToShow(3);
-    else setSlidesToShow(4);
+    if (typeof window !== 'undefined') {
+      if (window.innerWidth < 480) setSlidesToShow(1);
+      else if (window.innerWidth < 768) setSlidesToShow(2);
+      else if (window.innerWidth < 1024) setSlidesToShow(3);
+      else setSlidesToShow(4);
+    }
   }, []);
 
   useEffect(() => {
@@ -37,8 +32,6 @@ const CardCarousel = ({ products }) => {
   useEffect(() => {
     setProgress((currentSlide + slidesToShow) / products.length * 100);
   }, [currentSlide, slidesToShow, products.length]);
-
-
 
   const productCarouselSettings = {
     dots: false,
@@ -113,31 +106,6 @@ const CardCarousel = ({ products }) => {
     addToCart(product);
   }, [addToCart]);
 
-
-  const ProductSkeleton = () => (
-    <div className="px-0 flex-1 ">
-      <div className="p-4 pt-0">
-        <div className="relative">
-          <Skeleton height={340} />
-        </div>
-        <Skeleton height={24} width={150} className="mt-4 mb-1" />
-        <Skeleton height={16} count={2} className="mb-2" />
-        <Skeleton height={20} width={100} className="mb-4" />
-        <Skeleton height={40} />
-      </div>
-    </div>
-  );
-
-  if (products.length <= 0) {
-    return (
-      <div className="flex" >
-
-        {Array(4).fill().map((_, index) => (
-          <ProductSkeleton key={index} />
-        ))}
-      </div>
-    )
-  }
   return (
     <div className="relative">
       <Slider ref={sliderRef} {...productCarouselSettings}>
@@ -154,6 +122,7 @@ const CardCarousel = ({ products }) => {
                         layout="fill"
                         objectFit="cover"
                         className="hover:scale-110 transition-all duration-700 ease-in-out"
+                        loading="lazy"
                       />
                     </div>
                   ))}

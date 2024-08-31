@@ -62,7 +62,7 @@ export async function getServerSideProps(context) {
         }, {})
 
         // Fetch product tags
-        const productIds = products.map(product => product.id).join(',')
+        // const productIds = products.map(product => product.id).join(',')
         const { data: productTagsData } = await supabase
             .from('product_tags')
             .select('*')
@@ -224,7 +224,7 @@ const Page = ({ slug, initialProducts, initialFilters, error }) => {
                     <div className="w-1/4 pr-8">
                         {Object.entries(filters).map(([category, options]) => (
                             <div key={category} className="mb-6">
-                                <h3 className="font-semibold mb-2">{category}</h3>
+                                <h3 className="font-semibold mb-2 capitalize ">{category}</h3>
                                 {options.map(option => {
                                     const isAvailable = availableFilters[category]?.has(option.id)
                                     return (
