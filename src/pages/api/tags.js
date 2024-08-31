@@ -2,6 +2,8 @@
 import { supabase } from '@/lib/supabase'
 
 export default async function handler(req, res) {
+    const { tag_id } = req.query
+
     if (req.method === 'GET') {
         try {
             const { data, error } = await supabase

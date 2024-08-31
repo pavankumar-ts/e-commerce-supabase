@@ -11,34 +11,34 @@ import { useRouter } from 'next/router';
 const navItem = [
     {
         name: 'Shop',
-        url: '/collection',
+        url: '/collections',
         type: 'img-link',
         subList: [
             {
                 name: 'Skin & Body',
-                url: '/collection/skin-body',
+                url: '/collections/skin-body',
                 img: '/dummy.avif',
             },
             {
                 name: 'Hair',
-                url: '/collection/skin-body',
+                url: '/collections/skin-body',
                 img: '/dummy.avif',
             },
             {
                 name: 'Lip',
-                url: '/collection/skin-body',
+                url: '/collections/skin-body',
                 img: '/dummy.avif',
             },
             {
                 name: 'New Launches',
-                url: '/collection/skin-body',
+                url: '/collections/skin-body',
                 img: '/dummy.avif',
             },
         ]
     },
     {
         name: 'Best Seller',
-        url: '/collection/best-sellers',
+        url: '/collections/best-sellers',
         type: 'dynamic',
     },
     {
@@ -53,131 +53,131 @@ const navItem = [
         subList: [
             {
                 name: 'Shop by Concern',
-                url: '/collection/skin-body',
+                url: '/collections/skin-body',
                 subList: [
                     {
                         name: 'Acne',
-                        url: '/collection/best-sellers',
+                        url: '/collections/best-sellers',
                     },
                     {
                         name: 'Pigmentation',
-                        url: '/collection/best-sellers',
+                        url: '/collections/best-sellers',
                     },
                     {
                         name: 'Dehydration',
-                        url: '/collection/best-sellers',
+                        url: '/collections/best-sellers',
                     },
                     {
                         name: 'UV Damage',
-                        url: '/collection/best-sellers',
+                        url: '/collections/best-sellers',
                     },
                     {
                         name: 'Underarm Darkness',
-                        url: '/collection/best-sellers',
+                        url: '/collections/best-sellers',
                     },
                     {
                         name: 'Oilness',
-                        url: '/collection/best-sellers',
+                        url: '/collections/best-sellers',
                     },
                     {
                         name: 'Dullness',
-                        url: '/collection/best-sellers',
+                        url: '/collections/best-sellers',
                     },
                     {
                         name: 'Aging',
-                        url: '/collection/best-sellers',
+                        url: '/collections/best-sellers',
                     },
                 ]
             },
             {
                 name: 'Shop by Ingredients',
-                url: '/collection/skin-body',
+                url: '/collections/skin-body',
                 subList: [
                     {
                         name: 'Vitamin C',
-                        url: '/collection/best-sellers',
+                        url: '/collections/best-sellers',
                     },
                     {
                         name: 'BHA / Salicylic Acid',
-                        url: '/collection/best-sellers',
+                        url: '/collections/best-sellers',
                     },
                     {
                         name: 'Retinoid / Retinol',
-                        url: '/collection/best-sellers',
+                        url: '/collections/best-sellers',
                     },
                     {
                         name: 'Niacinamide',
-                        url: '/collection/best-sellers',
+                        url: '/collections/best-sellers',
                     },
                     {
                         name: 'UV Filters',
-                        url: '/collection/best-sellers',
+                        url: '/collections/best-sellers',
                     },
                     {
                         name: 'Ceramide',
-                        url: '/collection/best-sellers',
+                        url: '/collections/best-sellers',
                     },
                 ]
             },
             {
                 name: 'Skin Care',
-                url: '/collection/skin',
+                url: '/collections/skin',
                 subList: [
                     {
                         name: 'Cleanse',
-                        url: '/collection/best-sellers',
+                        url: '/collections/best-sellers',
                     },
                     {
                         name: 'Tone',
-                        url: '/collection/best-sellers',
+                        url: '/collections/best-sellers',
                     },
                     {
                         name: 'Treat',
-                        url: '/collection/best-sellers',
+                        url: '/collections/best-sellers',
                     },
                     {
                         name: 'Moisturize',
-                        url: '/collection/best-sellers',
+                        url: '/collections/best-sellers',
                     },
                     {
                         name: 'SPF',
-                        url: '/collection/best-sellers',
+                        url: '/collections/best-sellers',
                     },
                     {
                         name: 'Under Eye',
-                        url: '/collection/best-sellers',
+                        url: '/collections/best-sellers',
                     },
                 ]
             },
             {
                 name: 'Body Care',
-                url: '/collection/bady',
+                url: '/collections/bady',
                 subList: [
                     {
                         name: 'Cleanse',
-                        url: '/collection/best-sellers',
+                        url: '/collections/best-sellers',
                     },
                     {
                         name: 'Roll On',
-                        url: '/collection/best-sellers',
+                        url: '/collections/best-sellers',
                     },
                     {
                         name: 'Lotion',
-                        url: '/collection/best-sellers',
+                        url: '/collections/best-sellers',
                     },
                 ]
             },
             {
                 name: 'Lip',
-                url: '/collection/bady',
+                url: '/collections/bady',
                 subList: [
                     {
                         name: 'Treat',
-                        url: '/collection/best-sellers',
+                        url: '/collections/best-sellers',
                     },
                     {
                         name: 'Protect',
-                        url: '/collection/best-sellers',
+                        url: '/collections/best-sellers',
                     },
                 ]
             }
@@ -185,7 +185,7 @@ const navItem = [
     },
     {
         name: 'Body Care',
-        url: '/collection/body-care',
+        url: '/collections/body-care',
         type: 'dynamic',
     },
     {
@@ -200,79 +200,79 @@ const navItem = [
         subList: [
             {
                 name: 'Shop by Concern',
-                url: '/collection/bady',
+                url: '/collections/bady',
                 subList: [
                     {
                         name: 'Hair Fall',
-                        url: '/collection/best-sellers',
+                        url: '/collections/best-sellers',
                     },
                     {
                         name: 'Damaged Hair',
-                        url: '/collection/best-sellers',
+                        url: '/collections/best-sellers',
                     },
                     {
                         name: 'Dandruff',
-                        url: '/collection/best-sellers',
+                        url: '/collections/best-sellers',
                     },
                     {
                         name: 'Scalp Irritation',
-                        url: '/collection/best-sellers',
+                        url: '/collections/best-sellers',
                     },
                     {
                         name: 'Frizzy Hair',
-                        url: '/collection/best-sellers',
+                        url: '/collections/best-sellers',
                     },
                     {
                         name: 'Dull Hair',
-                        url: '/collection/best-sellers',
+                        url: '/collections/best-sellers',
                     },
                     {
                         name: 'Oily Scalp',
-                        url: '/collection/best-sellers',
+                        url: '/collections/best-sellers',
                     },
                     {
                         name: 'Hair Thinning',
-                        url: '/collection/best-sellers',
+                        url: '/collections/best-sellers',
                     },
                 ]
             },
             {
                 name: 'Shop by Ingredients',
-                url: '/collection/bady',
+                url: '/collections/bady',
                 subList: [
                     {
                         name: 'Capixyl',
-                        url: '/collection/best-sellers',
+                        url: '/collections/best-sellers',
                     },
                     {
                         name: 'Maleic Acid',
-                        url: '/collection/best-sellers',
+                        url: '/collections/best-sellers',
                     },
                     {
                         name: 'Peptide',
-                        url: '/collection/best-sellers',
+                        url: '/collections/best-sellers',
                     },
                     {
                         name: 'Carnitine',
-                        url: '/collection/best-sellers',
+                        url: '/collections/best-sellers',
                     },
                 ]
             },
             {
                 name: 'Hair',
-                url: '/collection/bady',
+                url: '/collections/bady',
                 subList: [
                     {
                         name: 'Treat',
-                        url: '/collection/best-sellers',
+                        url: '/collections/best-sellers',
                     },
                     {
                         name: 'Shampoo',
-                        url: '/collection/best-sellers',
+                        url: '/collections/best-sellers',
                     },
                     {
                         name: 'Mask',
-                        url: '/collection/best-sellers',
+                        url: '/collections/best-sellers',
                     },
                 ]
             },
@@ -280,7 +280,7 @@ const navItem = [
     },
     {
         name: 'Build Your Routine',
-        url: '/collection/body-care',
+        url: '/collections/body-care',
         type: 'direct',
     },
     {
@@ -418,7 +418,7 @@ const Navbar = () => {
                                             </Link>
                                         ))}
                                     </div>
-                                    <Link href='/collections'
+                                    <Link href='/collectionss'
                                         className="group  w-[200px] flex justify-center items-center gap-1 mt-8 text-[20px] font-figtree font-thin text-gray-600 py-2  border border-primary text-nowrap ease-linear"
                                     >See more <BsArrowRight className='w-0 opacity-0 transition-all text-xlg duration-300 ease-in-out group-hover:w-5 group-hover:opacity-100 group-hover:ml-1' /> </Link>
                                 </>

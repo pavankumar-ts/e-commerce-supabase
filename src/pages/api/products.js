@@ -8,6 +8,8 @@ export default async function handler(req, res) {
         const pageSize = parseInt(req.query.pageSize) || 20
         const start = (page - 1) * pageSize
         const end = start + pageSize - 1
+        const { collection } = req.query
+        console.log("collection req", collection);
 
         try {
             const { data, error, count } = await supabase

@@ -19,9 +19,16 @@ export const formatToIndianCurrency = (number) => {
     return `₹${formatted}`;
 };
 
+// Converts Best Seller to best-seller
 export const formatLinkPath = (name) => {
     return name.toLowerCase().replace(/\s+/g, '-')
 }
+
+// Converts best-seller to Best Seller
 export const formatLinkPathReverse = (name) => {
-    return name.toLowerCase().replace('-', ' ')
-}
+    return name
+        .replace('-', ' ')        // Replace hyphen with space
+        .split(' ')               // Split into an array of words
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize first letter of each word
+        .join(' ');               // Join words back into a single string
+};
