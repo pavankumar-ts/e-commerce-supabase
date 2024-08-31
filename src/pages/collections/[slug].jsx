@@ -1,3 +1,4 @@
+
 import Head from 'next/head'
 import Image from 'next/image'
 import { useState, useCallback, useContext, useMemo } from 'react'
@@ -8,6 +9,7 @@ import { CartItemSContext } from '@/Context'
 import renderStars from '@/components/common/renderStars'
 import { supabase } from '@/lib/supabase'
 import { formatLinkPathReverse, formatToIndianCurrency } from '@/utils/formatUtils'
+import Link from 'next/link'
 
 export async function getServerSideProps(context) {
     const { slug } = context.params
@@ -255,7 +257,7 @@ const Page = ({ slug, initialProducts, initialFilters, error }) => {
                         {filteredAndSortedProducts.map(product => (
                             <div key={product.id} className="px-0">
                                 <div className="p-4 pt-0">
-                                    <div className="relative">
+                                    <Link href={`/product/${product.slug}`} className="relative">
                                         <Slider {...imageSliderSettings}>
                                             {product.images.map((image, index) => (
                                                 <div key={index} className="relative h-[340px] overflow-hidden">
@@ -269,8 +271,10 @@ const Page = ({ slug, initialProducts, initialFilters, error }) => {
                                                 </div>
                                             ))}
                                         </Slider>
-                                    </div>
-                                    <h3 className="text-lg font-semibold mb-1 mt-4">{product.name}</h3>
+                                    </Link>
+                                    <Link href={`/product/${product.slug}`}>
+                                        <h3 className="text-lg font-semibold mb-1 mt-4">{product.name}</h3>
+                                    </Link>
                                     <p className="text-sm text-gray-600 mb-2">{product.brief}</p>
                                     <div className="flex mb-2">{renderStars(product.review)}</div>
                                     <div className="flex items-center mb-4">
