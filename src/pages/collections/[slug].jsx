@@ -27,33 +27,27 @@ const Page = ({ slug }) => {
         const fetchData = async () => {
             setLoading(true)
             try {
-                // Fetch products for the collection
                 const productsRes = await fetch(`/api/collections/${slug}`)
                 if (!productsRes.ok) throw new Error('Failed to fetch products')
                 const productsData = await productsRes.json()
-                setProducts(productsData)
 
-                // Extract product IDs from the fetched products
                 const productIds = productsData.map(product => product.id).join(',');
 
-                // Fetch filters
                 const filtersRes = await fetch('/api/tags')
                 if (!filtersRes.ok) throw new Error('Failed to fetch filter options')
                 const filtersData = await filtersRes.json()
                 setFilters(filtersData)
 
-
-                // Fetch product_tags data with filtered product IDs
                 const productTagsRes = await fetch(`/api/product_tags?product_ids=${productIds}`)
                 if (!productTagsRes.ok) throw new Error('Failed to fetch product tags')
                 const productTagsData = await productTagsRes.json()
 
-
-                // Map tags to products
-                const productsWithTags = productsData.map(product => {
-                    const productTags = productTagsData.filter(pt => pt.product_id === product.id)
-                    return { ...product, tags: productTags.map(pt => pt.tag_id) }
-                })
+                const productsWithTags = productsData.map(product => ({
+                    ...product,
+                    tags: productTagsData
+                        .filter(pt => pt.product_id === product.id)
+                        .map(pt => pt.tag_id)
+                }))
 
                 setProducts(productsWithTags)
 
@@ -85,13 +79,13 @@ const Page = ({ slug }) => {
         addToCart(product);
     }, [addToCart]);
 
-    const handleFilterChange = useCallback((category, option) => {
+    const handleFilterChange = useCallback((category, optionId) => {
         setActiveFilters(prev => {
             const newFilters = { ...prev }
-            if (newFilters[category].includes(option)) {
-                newFilters[category] = newFilters[category].filter(item => item !== option)
+            if (newFilters[category].includes(optionId)) {
+                newFilters[category] = newFilters[category].filter(item => item !== optionId)
             } else {
-                newFilters[category] = [...newFilters[category], option]
+                newFilters[category] = [...newFilters[category], optionId]
             }
             return newFilters
         })
@@ -100,16 +94,13 @@ const Page = ({ slug }) => {
     const filteredAndSortedProducts = useMemo(() => {
         let result = products
 
-        // Apply filters based on tags
         result = result.filter(product => {
             return Object.entries(activeFilters).every(([category, selectedOptions]) => {
                 if (selectedOptions.length === 0) return true
-                // Check if the product has any of the selected tags
                 return selectedOptions.some(option => product.tags.includes(option))
             })
         })
 
-        // Apply sorting (this part is unchanged)
         switch (sortBy) {
             case 'Featured':
                 result.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0))
@@ -140,6 +131,23 @@ const Page = ({ slug }) => {
         return result
     }, [products, activeFilters, sortBy])
 
+    const availableFilters = useMemo(() => {
+        const available = {}
+        filteredAndSortedProducts.forEach(product => {
+            if (Array.isArray(product.tags)) {
+                product.tags.forEach(tagId => {
+                    Object.entries(filters).forEach(([category, options]) => {
+                        if (!available[category]) available[category] = new Set()
+                        const option = options.find(opt => opt.id === tagId)
+                        if (option) {
+                            available[category].add(option.id)
+                        }
+                    })
+                })
+            }
+        })
+        return available
+    }, [filteredAndSortedProducts, filters])
 
     return (
         <>
@@ -173,7 +181,7 @@ const Page = ({ slug }) => {
                 </div>
 
                 {loading && <p>Loading...</p>}
-                {error && <p>Product Not Found...{error} </p>}
+                {error && <p>Error: {error}</p>}
                 {!loading && !error && (
                     <div className="flex">
                         {/* Sidebar with filters */}
@@ -181,18 +189,27 @@ const Page = ({ slug }) => {
                             {Object.entries(filters).map(([category, options]) => (
                                 <div key={category} className="mb-6">
                                     <h3 className="font-semibold mb-2">{category}</h3>
-                                    {options.map(option => (
-                                        <div key={option.id} className="flex items-center mb-1">
-                                            <input
-                                                type="checkbox"
-                                                id={option.id}
-                                                className="mr-2"
-                                                checked={activeFilters[category].includes(option.id)}
-                                                onChange={() => handleFilterChange(category, option.id)}
-                                            />
-                                            <label htmlFor={option}>{option.value}</label>
-                                        </div>
-                                    ))}
+                                    {options.map(option => {
+                                        const isAvailable = availableFilters[category]?.has(option.id)
+                                        return (
+                                            <div key={option.id} className="flex items-center mb-1">
+                                                <input
+                                                    type="checkbox"
+                                                    id={option.id}
+                                                    className="mr-2"
+                                                    checked={activeFilters[category].includes(option.id)}
+                                                    onChange={() => handleFilterChange(category, option.id)}
+                                                    disabled={!isAvailable}
+                                                />
+                                                <label
+                                                    htmlFor={option.id}
+                                                    className={isAvailable ? "" : "text-gray-400 cursor-not-allowed"}
+                                                >
+                                                    {option.value}
+                                                </label>
+                                            </div>
+                                        )
+                                    })}
                                 </div>
                             ))}
                         </div>
