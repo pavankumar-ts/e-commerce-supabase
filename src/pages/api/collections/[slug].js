@@ -5,11 +5,21 @@ import { formatLinkPathReverse } from '@/utils/formatUtils'
 export default async function handler(req, res) {
     const { slug } = req.query
     const formattedSlug = formatLinkPathReverse(slug)
-    console.log("slug format", formattedSlug);
 
     if (req.method === 'GET') {
         try {
-            // 1. Fetch the collection
+            if (slug === 'all-products') {
+                // Fetch all products
+                const { data: products, error: productsError } = await supabase
+                    .from('products')
+                    .select('*')
+
+                if (productsError) throw productsError
+
+                return res.status(200).json(products)
+            }
+
+            // Fetch the collection
             const { data: collection, error: collectionError } = await supabase
                 .from('collections')
                 .select('id')
@@ -22,7 +32,7 @@ export default async function handler(req, res) {
                 return res.status(404).json({ error: 'Collection not found' })
             }
 
-            // 2. Fetch product_ids from product_collection table
+            // Fetch product_ids from product_collection table
             const { data: productCollections, error: productCollectionError } = await supabase
                 .from('product_collection')
                 .select('product_id')
@@ -32,7 +42,7 @@ export default async function handler(req, res) {
 
             const productIds = productCollections.map(pc => pc.product_id)
 
-            // 3. Fetch products using the product_ids
+            // Fetch products using the product_ids
             const { data: products, error: productsError } = await supabase
                 .from('products')
                 .select('*')
