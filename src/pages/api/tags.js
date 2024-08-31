@@ -2,7 +2,6 @@
 import { supabase } from '@/lib/supabase'
 
 export default async function handler(req, res) {
-    const { tag_id } = req.query
 
     if (req.method === 'GET') {
         try {
@@ -13,12 +12,14 @@ export default async function handler(req, res) {
 
             if (error) throw error
 
+            console.log("data tags", data);
+
             // Group the options by tag
             const groupedOptions = data.reduce((acc, option) => {
                 if (!acc[option.tag]) {
                     acc[option.tag] = []
                 }
-                acc[option.tag].push(option.value)
+                acc[option.tag].push({ id: option.id, value: option.value });
                 return acc
             }, {})
 
