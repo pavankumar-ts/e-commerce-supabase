@@ -1,70 +1,105 @@
-import { formatLinkPathReverse, formatToIndianCurrency } from '@/utils/formatUtils'
 import Head from 'next/head'
-import React, { useState, useEffect, useCallback, useContext, useMemo } from 'react'
 import Image from 'next/image'
+import { useState, useCallback, useContext, useMemo } from 'react'
 import Slider from 'react-slick'
 import "slick-carousel/slick/slick.css"
 import "slick-carousel/slick/slick-theme.css"
 import { CartItemSContext } from '@/Context'
 import renderStars from '@/components/common/renderStars'
+import { supabase } from '@/lib/supabase'
+import { formatLinkPathReverse, formatToIndianCurrency } from '@/utils/formatUtils'
 
 export async function getServerSideProps(context) {
     const { slug } = context.params
-    return { props: { slug } }
+
+    try {
+        // Fetch products
+        let products
+        if (slug === 'all-products') {
+            const { data, error } = await supabase
+                .from('products')
+                .select('*')
+            if (error) throw error
+            products = data
+        } else {
+            const { data: collection } = await supabase
+                .from('collections')
+                .select('id')
+                .eq('slug', slug)
+                .single()
+
+            if (!collection) {
+                return { notFound: true }
+            }
+
+            const { data: productCollections } = await supabase
+                .from('product_collection')
+                .select('product_id')
+                .eq('collection_id', collection.id)
+
+            const productIds = productCollections.map(pc => pc.product_id)
+
+            const { data, error } = await supabase
+                .from('products')
+                .select('*')
+                .in('id', productIds)
+            if (error) throw error
+            products = data
+        }
+
+        // Fetch filters
+        const { data: filtersData } = await supabase
+            .from('tags')
+            .select('*')
+            .order('created_at', { ascending: true })
+
+        const filters = filtersData.reduce((acc, option) => {
+            if (!acc[option.tag]) {
+                acc[option.tag] = []
+            }
+            acc[option.tag].push({ id: option.id, value: option.value });
+            return acc
+        }, {})
+
+        // Fetch product tags
+        const productIds = products.map(product => product.id).join(',')
+        const { data: productTagsData } = await supabase
+            .from('product_tags')
+            .select('*')
+            .in('product_id', products.map(p => p.id))
+
+        const productsWithTags = products.map(product => ({
+            ...product,
+            tags: productTagsData
+                .filter(pt => pt.product_id === product.id)
+                .map(pt => pt.tag_id)
+        }))
+
+        return {
+            props: {
+                slug,
+                initialProducts: productsWithTags,
+                initialFilters: filters,
+            }
+        }
+    } catch (error) {
+        console.error('Error in getServerSideProps:', error)
+        return { props: { error: error.message } }
+    }
 }
 
-const Page = ({ slug }) => {
-    const [products, setProducts] = useState([])
-    const [filters, setFilters] = useState({})
-    const [activeFilters, setActiveFilters] = useState({})
-    const [loading, setLoading] = useState(true)
-    const [error, setError] = useState(null)
+const Page = ({ slug, initialProducts, initialFilters, error }) => {
+    const [products] = useState(initialProducts)
+    const [filters] = useState(initialFilters)
+    const [activeFilters, setActiveFilters] = useState(
+        Object.keys(initialFilters).reduce((acc, key) => {
+            acc[key] = []
+            return acc
+        }, {})
+    )
     const [sortBy, setSortBy] = useState('Featured')
 
     const { addToCart } = useContext(CartItemSContext);
-
-    useEffect(() => {
-        const fetchData = async () => {
-            setLoading(true)
-            try {
-                const productsRes = await fetch(`/api/collections/${slug}`)
-                if (!productsRes.ok) throw new Error('Failed to fetch products')
-                const productsData = await productsRes.json()
-
-                const productIds = productsData.map(product => product.id).join(',');
-
-                const filtersRes = await fetch('/api/tags')
-                if (!filtersRes.ok) throw new Error('Failed to fetch filter options')
-                const filtersData = await filtersRes.json()
-                setFilters(filtersData)
-
-                const productTagsRes = await fetch(`/api/product_tags?product_ids=${productIds}`)
-                if (!productTagsRes.ok) throw new Error('Failed to fetch product tags')
-                const productTagsData = await productTagsRes.json()
-
-                const productsWithTags = productsData.map(product => ({
-                    ...product,
-                    tags: productTagsData
-                        .filter(pt => pt.product_id === product.id)
-                        .map(pt => pt.tag_id)
-                }))
-
-                setProducts(productsWithTags)
-
-                const initialActiveFilters = Object.keys(filtersData).reduce((acc, key) => {
-                    acc[key] = []
-                    return acc
-                }, {})
-                setActiveFilters(initialActiveFilters)
-            } catch (err) {
-                setError(err.message)
-            } finally {
-                setLoading(false)
-            }
-        }
-
-        fetchData()
-    }, [slug])
 
     const imageSliderSettings = {
         dots: true,
@@ -149,6 +184,10 @@ const Page = ({ slug }) => {
         return available
     }, [filteredAndSortedProducts, filters])
 
+    if (error) {
+        return <div>Error: {error}</div>
+    }
+
     return (
         <>
             <Head>
@@ -180,85 +219,81 @@ const Page = ({ slug }) => {
                     <div>Showing {filteredAndSortedProducts.length} products</div>
                 </div>
 
-                {loading && <p>Loading...</p>}
-                {error && <p>Error: {error}</p>}
-                {!loading && !error && (
-                    <div className="flex">
-                        {/* Sidebar with filters */}
-                        <div className="w-1/4 pr-8">
-                            {Object.entries(filters).map(([category, options]) => (
-                                <div key={category} className="mb-6">
-                                    <h3 className="font-semibold mb-2">{category}</h3>
-                                    {options.map(option => {
-                                        const isAvailable = availableFilters[category]?.has(option.id)
-                                        return (
-                                            <div key={option.id} className="flex items-center mb-1">
-                                                <input
-                                                    type="checkbox"
-                                                    id={option.id}
-                                                    className="mr-2"
-                                                    checked={activeFilters[category].includes(option.id)}
-                                                    onChange={() => handleFilterChange(category, option.id)}
-                                                    disabled={!isAvailable}
-                                                />
-                                                <label
-                                                    htmlFor={option.id}
-                                                    className={isAvailable ? "" : "text-gray-400 cursor-not-allowed"}
-                                                >
-                                                    {option.value}
-                                                </label>
-                                            </div>
-                                        )
-                                    })}
-                                </div>
-                            ))}
-                        </div>
-
-                        {/* Product grid */}
-                        <div className="w-3/4 grid grid-cols-3 gap-6">
-                            {filteredAndSortedProducts.map(product => (
-                                <div key={product.id} className="px-0">
-                                    <div className="p-4 pt-0">
-                                        <div className="relative">
-                                            <Slider {...imageSliderSettings}>
-                                                {product.images.map((image, index) => (
-                                                    <div key={index} className="relative h-[340px] overflow-hidden">
-                                                        <Image
-                                                            src={image}
-                                                            alt={`${product.name} - ${index + 1}`}
-                                                            layout="fill"
-                                                            objectFit="cover"
-                                                            className="hover:scale-110 transition-all duration-700 ease-in-out"
-                                                        />
-                                                    </div>
-                                                ))}
-                                            </Slider>
+                <div className="flex">
+                    {/* Sidebar with filters */}
+                    <div className="w-1/4 pr-8">
+                        {Object.entries(filters).map(([category, options]) => (
+                            <div key={category} className="mb-6">
+                                <h3 className="font-semibold mb-2">{category}</h3>
+                                {options.map(option => {
+                                    const isAvailable = availableFilters[category]?.has(option.id)
+                                    return (
+                                        <div key={option.id} className="flex items-center mb-1">
+                                            <input
+                                                type="checkbox"
+                                                id={option.id}
+                                                className="mr-2"
+                                                checked={activeFilters[category].includes(option.id)}
+                                                onChange={() => handleFilterChange(category, option.id)}
+                                                disabled={!isAvailable}
+                                            />
+                                            <label
+                                                htmlFor={option.id}
+                                                className={isAvailable ? "" : "text-gray-400 cursor-not-allowed"}
+                                            >
+                                                {option.value}
+                                            </label>
                                         </div>
-                                        <h3 className="text-lg font-semibold mb-1 mt-4">{product.name}</h3>
-                                        <p className="text-sm text-gray-600 mb-2">{product.brief}</p>
-                                        <div className="flex mb-2">{renderStars(product.review)}</div>
-                                        <div className="flex items-center mb-4">
-                                            <span className="text-lg font-bold mr-2">{formatToIndianCurrency(product.price)}</span>
-                                            {product.mrp && product.mrp !== product.price && (
-                                                <span className="text-sm text-gray-500 line-through">{formatToIndianCurrency(product.mrp)}</span>
-                                            )}
-                                        </div>
-                                        <button
-                                            className={`w-full py-2 px-4 ${product.stock > 0
-                                                ? 'bg-black text-white'
-                                                : 'bg-gray-400 text-white cursor-not-allowed'
-                                                }`}
-                                            disabled={product.stock === 0}
-                                            onClick={() => memoizedHandleAddCard(product)}
-                                        >
-                                            {product.stock > 0 ? 'Add to cart' : 'Sold out'}
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+                                    )
+                                })}
+                            </div>
+                        ))}
                     </div>
-                )}
+
+                    {/* Product grid */}
+                    <div className="w-3/4 grid grid-cols-3 gap-6">
+                        {filteredAndSortedProducts.map(product => (
+                            <div key={product.id} className="px-0">
+                                <div className="p-4 pt-0">
+                                    <div className="relative">
+                                        <Slider {...imageSliderSettings}>
+                                            {product.images.map((image, index) => (
+                                                <div key={index} className="relative h-[340px] overflow-hidden">
+                                                    <Image
+                                                        src={image}
+                                                        alt={`${product.name} - ${index + 1}`}
+                                                        layout="fill"
+                                                        objectFit="cover"
+                                                        className="hover:scale-110 transition-all duration-700 ease-in-out"
+                                                    />
+                                                </div>
+                                            ))}
+                                        </Slider>
+                                    </div>
+                                    <h3 className="text-lg font-semibold mb-1 mt-4">{product.name}</h3>
+                                    <p className="text-sm text-gray-600 mb-2">{product.brief}</p>
+                                    <div className="flex mb-2">{renderStars(product.review)}</div>
+                                    <div className="flex items-center mb-4">
+                                        <span className="text-lg font-bold mr-2">{formatToIndianCurrency(product.price)}</span>
+                                        {product.mrp && product.mrp !== product.price && (
+                                            <span className="text-sm text-gray-500 line-through">{formatToIndianCurrency(product.mrp)}</span>
+                                        )}
+                                    </div>
+                                    <button
+                                        className={`w-full py-2 px-4 ${product.stock > 0
+                                            ? 'bg-black text-white'
+                                            : 'bg-gray-400 text-white cursor-not-allowed'
+                                            }`}
+                                        disabled={product.stock === 0}
+                                        onClick={() => memoizedHandleAddCard(product)}
+                                    >
+                                        {product.stock > 0 ? 'Add to cart' : 'Sold out'}
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
             </main>
         </>
     )
