@@ -64,7 +64,7 @@ const CollectionsPage = () => {
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {collections.map((collection) => (
-                            <Link href={`/collections/${formatLinkPath(collection.name)}`} key={collection.id} className="p-4">
+                            <Link href={`/collections/${formatLinkPath(collection.slug)}`} key={collection.id} className="p-4">
                                 <div className="w-full h-[430px] relative">
                                     <Image src={collection.image} layout='fill' objectFit='cover' alt={collection.name} />
                                 </div>
