@@ -1,6 +1,7 @@
 import React from 'react';
 import Image from 'next/image';
 import { BsArrowRight } from "react-icons/bs";
+import Link from 'next/link';
 
 const Hero = () => {
     return (
@@ -28,10 +29,10 @@ const Hero = () => {
                     Our professionals will review and evaluate your concerns and we will create
                     the most suitable regimen for you.
                 </p>
-                <button className="group w-[160px] flex items-center justify-center bg-black text-white  py-2 transition duration-300">
+                <Link href='/collections' className="group w-[160px] flex items-center justify-center bg-black text-white  py-2 transition duration-300">
                     <span className="">Build Now</span>
                     <BsArrowRight className="w-0 opacity-0 transition-all text-xlg duration-300 ease-in-out group-hover:w-5 group-hover:opacity-100 group-hover:ml-1" />
-                </button>
+                </Link>
             </div>
         </div>
     );
