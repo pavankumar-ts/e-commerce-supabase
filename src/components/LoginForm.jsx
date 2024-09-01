@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { Button } from "@/components/ui/button"
 import {
@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label"
 import { supabase } from '@/lib/supabase';
 
 export const description =
-    "A login form with email and password, integrated with Supabase authentication."
+    "A login form with email and password, integrated with Supabase authentication and auto-redirect for signed-in users."
 
 export function LoginForm() {
     const [email, setEmail] = useState('');
@@ -22,6 +22,28 @@ export function LoginForm() {
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
+
+    useEffect(() => {
+        const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_IN') {
+                router.push('/dashboard');
+            }
+        });
+
+        // Check if the user is already signed in
+        checkUser();
+
+        return () => {
+            authListener.subscription.unsubscribe();
+        };
+    }, [router]);
+
+    const checkUser = async () => {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+            router.push('/dashboard');
+        }
+    };
 
     const handleSignIn = async (e) => {
         e.preventDefault();
@@ -34,7 +56,7 @@ export function LoginForm() {
             });
             if (error) throw error;
             console.log("Signed In", data);
-            router.push('/dashboard');
+            // No need to manually redirect here, the onAuthStateChange listener will handle it
         } catch (error) {
             setError(error.message);
         } finally {

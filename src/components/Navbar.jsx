@@ -355,7 +355,7 @@ const Navbar = () => {
             <p className="bg-[#fb6900] text-center text-white text-[14px] font-light py-2">Offer - Buy 2 & Get 1 Sunscreen Free. Shop Now!</p>
             <nav
                 className={`bg-white sticky top-0 transition-transform duration-300 ease-in-out 
-                ${hasScrolled ? (isSticky ? 'translate-y-0' : '-translate-y-full') : ''} z-50`}
+                ${hasScrolled ? (isSticky ? 'translate-y-0' : '-translate-y-full') : ''} z-10`}
             >
                 <div className="flex justify-between h-16 px-4 max-w-[1300px] border-b-[1px] border-gray-300 m-auto gap-4">
                     {/* logo */}

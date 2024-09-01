@@ -1,5 +1,3 @@
-// File: pages/_app.js
-
 import Cart from "@/components/Cart";
 import Navbar from "@/components/Navbar";
 import { CartIsOpenContext, CartItemSContext } from "@/Context";
@@ -7,6 +5,8 @@ import "@/styles/globals.css";
 import { useEffect, useState } from "react";
 import { useCart } from "@/hooks/useCart";
 import axios from 'axios';
+import { useRouter } from "next/router";
+import DashboardLayout from "@/components/DashboardLayout";
 
 export default function App({ Component, pageProps }) {
   const {
@@ -22,6 +22,7 @@ export default function App({ Component, pageProps }) {
   } = useCart();
 
   const [isClient, setIsClient] = useState(false);
+  const router = useRouter();
 
   const verifyAndUpdateCart = async (savedCartItems) => {
     try {
@@ -77,11 +78,21 @@ export default function App({ Component, pageProps }) {
     cartTotal
   };
 
+
+  // Check if the current route starts with '/dashboard'
+  const isDashboardPage = router.pathname.startsWith('/dashboard');
+
   return (
     <CartIsOpenContext.Provider value={{ cartIsOpen, setCartIsOpen }}>
       <CartItemSContext.Provider value={cartContextValue}>
         <Navbar />
-        <Component {...pageProps} />
+        {isDashboardPage ? (
+          <DashboardLayout>
+            <Component {...pageProps} />
+          </DashboardLayout>
+        ) : (
+          <Component {...pageProps} />
+        )}
         {isClient && <Cart />}
       </CartItemSContext.Provider>
     </CartIsOpenContext.Provider>
