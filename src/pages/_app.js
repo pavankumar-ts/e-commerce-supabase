@@ -85,7 +85,7 @@ export default function App({ Component, pageProps }) {
   return (
     <CartIsOpenContext.Provider value={{ cartIsOpen, setCartIsOpen }}>
       <CartItemSContext.Provider value={cartContextValue}>
-        <Navbar />
+        {!isDashboardPage && <Navbar />}
         {isDashboardPage ? (
           <DashboardLayout>
             <Component {...pageProps} />

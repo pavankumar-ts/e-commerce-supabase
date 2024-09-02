@@ -32,3 +32,9 @@ export const formatLinkPathReverse = (name) => {
         .map(word => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize first letter of each word
         .join(' ');               // Join words back into a single string
 };
+
+
+export const formatDate = (dateString) => {
+    const options = { day: '2-digit', month: '2-digit', year: '2-digit' };
+    return new Date(dateString).toLocaleDateString('en-GB', options);
+}

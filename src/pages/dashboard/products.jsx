@@ -1,8 +1,12 @@
+import { Products } from '@/components/Admin/Dashboard/Products'
 import React from 'react'
 
 const products = () => {
   return (
-    <div>products</div>
+    <>
+      <Products />
+
+    </>
   )
 }
 
